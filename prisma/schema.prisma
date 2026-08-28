@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model WeatherRecord {
+  id          String   @id @default(uuid()) @db.Uuid
+
+  city        String
+  country     String
+
+  latitude    Decimal  @db.Decimal(9, 6)
+  longitude   Decimal  @db.Decimal(9, 6)
+
+  temperature Decimal  @db.Decimal(5, 2)
+  feelsLike   Decimal  @db.Decimal(5, 2)
+
+  humidity    Int
+  pressure    Int
+
+  weather     String
+  description String
+
+  windSpeed   Decimal  @db.Decimal(6, 2)
+
+  recordedAt  DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([city])
+  @@index([recordedAt])
+  @@map("weather_records")
+}
