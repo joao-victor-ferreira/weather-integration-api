@@ -390,31 +390,4 @@ npm run start:prod  # executar produção
 
 ## Status
 
-**Em desenvolvimento**
-
-### Setup
-
-- [x] Setup NestJS
-- [x] Fastify
-- [x] SWC
-- [x] Biome
-- [x] Husky
-- [x] Vitest
-- [x] Prisma
-- [x] PostgreSQL
-- [x] Docker (API + banco automatizados via `docker compose up --build`)
-- [x] Configuração de ambiente
-
-### Integração
-
-- [x] Integração com WeatherAPI
-- [x] Consulta de dados climáticos
-- [x] Persistência dos dados climáticos
-- [x] Endpoint `POST /weather`
-- [x] Endpoint `GET /weather/history`
-
-### Documentação e Qualidade
-
-- [x] Swagger
-- [x] Testes automatizados
-- [x] Testes E2E
+**Concluído para avaliação técnica.**
