@@ -21,6 +21,7 @@ A aplicação realiza a integração com uma API pública de clima, processa os 
                            ▼
                     ┌──────────────┐
                     │   Fastify    │
+                    │  Rate Limit  │
                     └──────┬───────┘
                            │
                            ▼
@@ -32,14 +33,19 @@ A aplicação realiza a integração com uma API pública de clima, processa os 
                            │
                            ▼
                     ┌──────────────┐
-                    │WeatherService│
+                    │WeatherController
+                    └──────┬───────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │ WeatherService
                     └──────┬───────┘
                            │
               ┌────────────┴────────────┐
               │                         │
               ▼                         ▼
        ┌───────────────┐        ┌──────────────┐
-       │WeatherApiSvc  │        │ PrismaService│
+       │WeatherApiService       │ PrismaService│
        └──────┬────────┘        └──────┬───────┘
               │                        │
               ▼                        ▼
@@ -91,19 +97,23 @@ sequenceDiagram
     actor Client
     participant Fastify
     participant Controller as WeatherController
+    participant DTO as WeatherHistoryQueryDto
     participant Service as WeatherService
     participant Prisma as PrismaService
     participant DB as PostgreSQL
 
-    Client->>Fastify: GET /weather/history
-    Fastify->>Controller: encaminha requisição
-    Controller->>Service: getHistory()
-    Service->>Prisma: findMany()
-    Prisma->>DB: SELECT * FROM weather
-    DB-->>Prisma: registros armazenados
-    Prisma-->>Service: lista de registros
-    Service-->>Controller: retorna lista
-    Controller-->>Client: 200 OK (JSON)
+    Client->>Fastify: GET /weather/history?page=1&limit=50
+    Fastify->>Fastify: Verifica Rate Limit
+    Fastify->>Controller: Encaminha requisição
+    Controller->>DTO: Validação e transformação
+    DTO-->>Controller: page=1, limit=50
+    Controller->>Service: getWeatherHistory(page, limit)
+    Service->>Prisma: findMany + count
+    Prisma->>DB: SELECT + COUNT
+    DB-->>Prisma: Registros + total
+    Prisma-->>Service: Dados paginados
+    Service-->>Controller: data + meta
+    Controller-->>Client: 200 OK
 ```
 
 ---
@@ -141,6 +151,7 @@ weather-integration-api/
 │   │       │   ├── create-weather.dto.ts
 │   │       │   ├── weather-query.dto.ts
 │   │       │   └── weather-response.dto.ts
+|   |       |   └── weather-history-query.dto.ts
 │   │       │
 │   │       ├── interfaces/
 │   │       │   └── weather-api-response.interface.ts
@@ -190,7 +201,9 @@ weather-integration-api/
 | Biome | Lint e formatação |
 | Husky | Git Hooks |
 | Vitest | Testes |
+| Supertest | Testes E2E |
 | Swagger | Documentação da API |
+| @fastify/rate-limit | Controle de requisições |
 
 ---
 

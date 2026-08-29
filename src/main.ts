@@ -5,6 +5,7 @@ import {
 	type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import rateLimit from "@fastify/rate-limit";
 
 import { AppModule } from "./app.module.js";
 
@@ -14,19 +15,21 @@ async function bootstrap() {
 		new FastifyAdapter(),
 	);
 
+	await app.register(rateLimit, {
+		max: 60,
+		timeWindow: "1 minute",
+	});
+
 	app.useGlobalPipes(
 		new ValidationPipe({
 			whitelist: true,
 			transform: true,
-			forbidNonWhitelisted: true,
 		}),
 	);
 
 	const config = new DocumentBuilder()
 		.setTitle("Weather Integration API")
-		.setDescription(
-			"REST API para consulta e persistência de dados climáticos.",
-		)
+		.setDescription("API para integração com dados climáticos")
 		.setVersion("1.0")
 		.build();
 
@@ -34,7 +37,7 @@ async function bootstrap() {
 
 	SwaggerModule.setup("docs", app, document);
 
-	await app.listen(process.env.PORT ?? 3000, "0.0.0.0");
+	await app.listen(3000, "0.0.0.0");
 }
 
-await bootstrap();
+bootstrap();

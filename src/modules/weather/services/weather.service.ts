@@ -10,12 +10,9 @@ export class WeatherService {
 		private readonly prismaService: PrismaService,
 	) {}
 
-	async getWeather(city: string) {
-		return this.weatherApiService.getCurrentWeather(city);
-	}
-
 	async createWeather(city: string) {
-		const weather = await this.weatherApiService.getCurrentWeather(city);
+		const weather =
+			await this.weatherApiService.getCurrentWeather(city);
 
 		return this.prismaService.weatherRecord.create({
 			data: {
@@ -41,11 +38,29 @@ export class WeatherService {
 		});
 	}
 
-	async getWeatherHistory() {
-		return this.prismaService.weatherRecord.findMany({
-			orderBy: {
-				recordedAt: "desc",
+	async getWeatherHistory(page = 1, limit = 50) {
+		const skip = (page - 1) * limit;
+
+		const [data, total] = await Promise.all([
+			this.prismaService.weatherRecord.findMany({
+				skip,
+				take: limit,
+				orderBy: {
+					recordedAt: "desc",
+				},
+			}),
+
+			this.prismaService.weatherRecord.count(),
+		]);
+
+		return {
+			data,
+			meta: {
+				page,
+				limit,
+				total,
+				totalPages: Math.ceil(total / limit),
 			},
-		});
+		};
 	}
 }

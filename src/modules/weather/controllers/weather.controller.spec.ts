@@ -6,7 +6,6 @@ describe("WeatherController", () => {
 	let controller: WeatherController;
 
 	const weatherService = {
-		getWeather: vi.fn(),
 		createWeather: vi.fn(),
 		getWeatherHistory: vi.fn(),
 	};
@@ -15,31 +14,6 @@ describe("WeatherController", () => {
 		vi.clearAllMocks();
 
 		controller = new WeatherController(weatherService as never);
-	});
-
-	describe("getWeather", () => {
-		it("deve consultar o clima de uma cidade", async () => {
-			const weather = {
-				location: {
-					name: "Rio De Janeiro",
-					country: "Brazil",
-				},
-				current: {
-					temp_c: 22.5,
-					feelslike_c: 23.9,
-				},
-			};
-
-			weatherService.getWeather.mockResolvedValue(weather);
-
-			const result = await controller.getWeather({
-				city: "Rio de Janeiro",
-			});
-
-			expect(weatherService.getWeather).toHaveBeenCalledWith("Rio de Janeiro");
-
-			expect(result).toEqual(weather);
-		});
 	});
 
 	describe("createWeather", () => {
@@ -66,21 +40,33 @@ describe("WeatherController", () => {
 	});
 
 	describe("getWeatherHistory", () => {
-		it("deve retornar o histórico climático", async () => {
-			const history = [
-				{
-					id: "weather-1",
-					city: "Rio De Janeiro",
-					country: "Brazil",
-					temperature: "22.5",
-				},
-			];
+		it("deve retornar o histórico climático com paginação", async () => {
+			const history = {
+				data: [
+					{
+						id: "weather-1",
+						city: "Rio De Janeiro",
+						country: "Brazil",
+						temperature: "22.5",
+					},
+				],
+				page: 1,
+				limit: 50,
+				total: 1,
+				totalPages: 1,
+			};
 
 			weatherService.getWeatherHistory.mockResolvedValue(history);
 
-			const result = await controller.getWeatherHistory();
+			const result = await controller.getWeatherHistory({
+				page: 1,
+				limit: 50,
+			});
 
-			expect(weatherService.getWeatherHistory).toHaveBeenCalled();
+			expect(weatherService.getWeatherHistory).toHaveBeenCalledWith(
+				1,
+				50,
+			);
 
 			expect(result).toEqual(history);
 		});
