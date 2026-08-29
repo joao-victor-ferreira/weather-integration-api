@@ -262,13 +262,13 @@ npx prisma validate
 Gerar o Prisma Client:
 
 ```bash
-npm run db:generate
+npx prisma generate
 ```
 
 Executar migrations:
 
 ```bash
-npm run db:migrate
+npx prisma migrate dev
 ```
 
 ---
