@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Post, Query } from "@nestjs/common";
 
-import { CreateWeatherDto } from "../dto/create-weather.dto.js";
-import { WeatherQueryDto } from "../dto/weather-query.dto.js";
-import { WeatherService } from "../services/weather.service.js";
+import type { CreateWeatherDto } from "../dto/create-weather.dto.js";
+import type { WeatherQueryDto } from "../dto/weather-query.dto.js";
+import type { WeatherService } from "../services/weather.service.js";
 
 @Controller("weather")
 export class WeatherController {
