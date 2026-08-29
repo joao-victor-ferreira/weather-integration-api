@@ -30,20 +30,83 @@ A aplicação realiza a integração com uma API pública de clima, processa os 
                     │WeatherModule │
                     └──────┬───────┘
                            │
+                           ▼
+                    ┌──────────────┐
+                    │WeatherService│
+                    └──────┬───────┘
+                           │
               ┌────────────┴────────────┐
               │                         │
               ▼                         ▼
-       ┌──────────────┐         ┌──────────────┐
-       │WeatherService│         │ PrismaService│
-       └──────┬───────┘         └──────┬───────┘
+       ┌───────────────┐        ┌──────────────┐
+       │WeatherApiSvc  │        │ PrismaService│
+       └──────┬────────┘        └──────┬───────┘
               │                        │
               ▼                        ▼
        ┌──────────────┐         ┌──────────────┐
-       │ OpenWeather  │         │  PostgreSQL  │
-       │     API      │         │   Database   │
+       │  WeatherAPI  │         │  PostgreSQL  │
+       │  (externa)   │         │   Database   │
        └──────────────┘         └──────────────┘
 ```
 
+---
+
+## Diagrama de Sequência
+
+### POST /weather
+
+```mermaid
+sequenceDiagram
+    actor Client
+    participant Fastify
+    participant Controller as WeatherController
+    participant DTO
+    participant Service as WeatherService
+    participant ApiService as WeatherApiService
+    participant WeatherAPI as WeatherAPI (externa)
+    participant Prisma as PrismaService
+    participant DB as PostgreSQL
+
+    Client->>Fastify: POST /weather { city: "Rio de Janeiro" }
+    Fastify->>Controller: encaminha requisição
+    Controller->>DTO: valida CreateWeatherDto
+    DTO-->>Controller: dados validados
+    Controller->>Service: createWeather(city)
+    Service->>ApiService: fetchCurrentWeather(city)
+    ApiService->>WeatherAPI: GET current.json?key=API_KEY&q=city
+    WeatherAPI-->>ApiService: dados climáticos
+    ApiService-->>Service: dados processados
+    Service->>Prisma: create(weatherData)
+    Prisma->>DB: INSERT INTO weather (...)
+    DB-->>Prisma: registro salvo
+    Prisma-->>Service: retorna registro criado
+    Service-->>Controller: retorna registro
+    Controller-->>Client: 201 Created (JSON)
+```
+
+### GET /weather/history
+
+```mermaid
+sequenceDiagram
+    actor Client
+    participant Fastify
+    participant Controller as WeatherController
+    participant Service as WeatherService
+    participant Prisma as PrismaService
+    participant DB as PostgreSQL
+
+    Client->>Fastify: GET /weather/history
+    Fastify->>Controller: encaminha requisição
+    Controller->>Service: getHistory()
+    Service->>Prisma: findMany()
+    Prisma->>DB: SELECT * FROM weather
+    DB-->>Prisma: registros armazenados
+    Prisma-->>Service: lista de registros
+    Service-->>Controller: retorna lista
+    Controller-->>Client: 200 OK (JSON)
+```
+
+---
 
 ## Estrutura do projeto
 
@@ -64,29 +127,37 @@ weather-integration-api/
 │   │
 │   ├── database/
 │   │   └── prisma/
+│   │       ├── prisma.module.ts
 │   │       └── prisma.service.ts
 │   │
 │   ├── modules/
 │   │   └── weather/
 │   │       │
 │   │       ├── controllers/
-│   │       │   └── weather.controller.ts
+│   │       │   ├── weather.controller.ts
+│   │       │   └── weather.controller.spec.ts
 │   │       │
 │   │       ├── dto/
 │   │       │   ├── create-weather.dto.ts
-│   │       │   └── weather-query.dto.ts
+│   │       │   ├── weather-query.dto.ts
+│   │       │   └── weather-response.dto.ts
 │   │       │
 │   │       ├── interfaces/
-│   │       │   └── openweather-response.interface.ts
+│   │       │   └── weather-api-response.interface.ts
 │   │       │
 │   │       ├── services/
-│   │       │   ├── openweather.service.ts
-│   │       │   └── weather.service.ts
+│   │       │   ├── weather-api.service.ts
+│   │       │   ├── weather-api.service.spec.ts
+│   │       │   ├── weather.service.ts
+│   │       │   └── weather.service.spec.ts
 │   │       │
 │   │       └── weather.module.ts
 │   │
 │   ├── app.module.ts
 │   └── main.ts
+│
+├── test/
+│   └── app.e2e-spec.ts
 │
 ├── .env
 ├── .gitignore
@@ -113,10 +184,13 @@ weather-integration-api/
 | SWC | Compilação |
 | Prisma | ORM |
 | PostgreSQL | Banco de dados |
+| WeatherAPI | Provedor de dados climáticos |
+| class-validator | Validação de DTOs |
 | Docker | Ambiente de infraestrutura |
 | Biome | Lint e formatação |
 | Husky | Git Hooks |
 | Vitest | Testes |
+| Swagger | Documentação da API |
 
 ---
 
@@ -144,6 +218,7 @@ Crie um arquivo `.env` na raiz:
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/weather_db"
+WEATHER_API_KEY="sua_chave_da_weatherapi"
 ```
 
 ### Banco de dados
@@ -190,6 +265,19 @@ Modo desenvolvimento:
 npm run start:dev
 ```
 
+API disponível em:
+
+```text
+http://localhost:3000
+```
+
+Documentação Swagger:
+
+```text
+http://localhost:3000/docs
+```
+
+---
 
 ## Comandos
 
@@ -198,7 +286,7 @@ npm run start:dev
 ```bash
 npm run check       # verificar código
 npm run check:fix   # corrigir problemas
-npm run format       # formatar
+npm run format      # formatar
 ```
 
 **Testes**
@@ -217,6 +305,7 @@ npm run start:prod  # executar produção
 ```
 
 ---
+
 ## Status
 
 **Em desenvolvimento**
