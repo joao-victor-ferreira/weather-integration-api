@@ -245,6 +245,6 @@ npm run start:prod  # executar produção
 
 ### Documentação e Qualidade
 
-- [ ] Swagger
+- [x] Swagger
 - [ ] Testes automatizados
 - [ ] Testes E2E
