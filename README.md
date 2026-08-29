@@ -218,7 +218,9 @@ Crie um arquivo `.env` na raiz:
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/weather_db"
-WEATHER_API_KEY="sua_chave_da_weatherapi"
+PORT=3000
+WEATHER_API_KEY=""
+WEATHER_API_BASE_URL="https://api.weatherapi.com/v1"
 ```
 
 ### Banco de dados
