@@ -1,11 +1,11 @@
-import type { HttpService } from "@nestjs/axios";
+import { HttpService } from "@nestjs/axios";
 import {
 	Injectable,
 	InternalServerErrorException,
 	NotFoundException,
 	UnauthorizedException,
 } from "@nestjs/common";
-import type { ConfigService } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 import { AxiosError } from "axios";
 import { firstValueFrom } from "rxjs";
 

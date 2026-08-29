@@ -217,10 +217,11 @@ npm run start:prod  # executar produção
 ```
 
 ---
-
 ## Status
 
 **Em desenvolvimento**
+
+### Setup
 
 - [x] Setup NestJS
 - [x] Fastify
@@ -231,8 +232,19 @@ npm run start:prod  # executar produção
 - [x] Prisma
 - [x] PostgreSQL
 - [x] Docker
-- [ ] Integração OpenWeather
-- [ ] Persistência dos dados climáticos
-- [ ] API REST
+- [x] Configuração de ambiente
+
+### Integração
+
+- [x] Integração com WeatherAPI
+- [x] Consulta de dados climáticos
+- [x] Endpoint `GET /weather`
+- [x] Persistência dos dados climáticos
+- [x] Endpoint `POST /weather`
+- [ ] Endpoint `GET /weather/history`
+
+### Documentação e Qualidade
+
 - [ ] Swagger
 - [ ] Testes automatizados
+- [ ] Testes E2E
