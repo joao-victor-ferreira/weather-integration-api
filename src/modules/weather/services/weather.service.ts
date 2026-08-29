@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import type { PrismaService } from "../../../database/prisma/prisma.service.js";
-import type { WeatherApiService } from "./weather-api.service.js";
+import { PrismaService } from "../../../database/prisma/prisma.service.js";
+import { WeatherApiService } from "./weather-api.service.js";
 
 @Injectable()
 export class WeatherService {
