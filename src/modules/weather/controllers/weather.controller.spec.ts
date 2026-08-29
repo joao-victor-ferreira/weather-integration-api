@@ -63,10 +63,7 @@ describe("WeatherController", () => {
 				limit: 50,
 			});
 
-			expect(weatherService.getWeatherHistory).toHaveBeenCalledWith(
-				1,
-				50,
-			);
+			expect(weatherService.getWeatherHistory).toHaveBeenCalledWith(1, 50);
 
 			expect(result).toEqual(history);
 		});

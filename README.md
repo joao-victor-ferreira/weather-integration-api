@@ -66,28 +66,29 @@ sequenceDiagram
     actor Client
     participant Fastify
     participant Controller as WeatherController
-    participant DTO
+    participant DTO as DTO
     participant Service as WeatherService
     participant ApiService as WeatherApiService
-    participant WeatherAPI as WeatherAPI (externa)
+    participant WeatherAPI as WeatherAPI
     participant Prisma as PrismaService
     participant DB as PostgreSQL
 
-    Client->>Fastify: POST /weather { city: "Rio de Janeiro" }
-    Fastify->>Controller: encaminha requisição
-    Controller->>DTO: valida CreateWeatherDto
-    DTO-->>Controller: dados validados
+    Client->>Fastify: POST /weather
+    Fastify->>Fastify: Verifica Rate Limit
+    Fastify->>Controller: Encaminha requisição
+    Controller->>DTO: Validação
+    DTO-->>Controller: Dados validados
     Controller->>Service: createWeather(city)
-    Service->>ApiService: fetchCurrentWeather(city)
-    ApiService->>WeatherAPI: GET current.json?key=API_KEY&q=city
-    WeatherAPI-->>ApiService: dados climáticos
-    ApiService-->>Service: dados processados
+    Service->>ApiService: getCurrentWeather(city)
+    ApiService->>WeatherAPI: GET current.json
+    WeatherAPI-->>ApiService: Dados climáticos
+    ApiService-->>Service: Dados processados
     Service->>Prisma: create(weatherData)
-    Prisma->>DB: INSERT INTO weather (...)
-    DB-->>Prisma: registro salvo
-    Prisma-->>Service: retorna registro criado
-    Service-->>Controller: retorna registro
-    Controller-->>Client: 201 Created (JSON)
+    Prisma->>DB: INSERT
+    DB-->>Prisma: Registro salvo
+    Prisma-->>Service: Registro criado
+    Service-->>Controller: Registro criado
+    Controller-->>Client: 201 Created
 ```
 
 ### GET /weather/history

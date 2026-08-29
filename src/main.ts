@@ -1,3 +1,4 @@
+import rateLimit from "@fastify/rate-limit";
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import {
@@ -5,7 +6,6 @@ import {
 	type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import rateLimit from "@fastify/rate-limit";
 
 import { AppModule } from "./app.module.js";
 

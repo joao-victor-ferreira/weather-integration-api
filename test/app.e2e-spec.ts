@@ -10,13 +10,11 @@ describe("Weather API (e2e)", () => {
 	let app: App;
 
 	beforeEach(async () => {
-		const moduleFixture: TestingModule =
-			await Test.createTestingModule({
-				imports: [AppModule],
-			}).compile();
+		const moduleFixture: TestingModule = await Test.createTestingModule({
+			imports: [AppModule],
+		}).compile();
 
-		const nestApp =
-			moduleFixture.createNestApplication();
+		const nestApp = moduleFixture.createNestApplication();
 
 		nestApp.useGlobalPipes(
 			new ValidationPipe({
@@ -62,10 +60,7 @@ describe("Weather API (e2e)", () => {
 		});
 
 		it("deve retornar 400 quando a cidade não for informada", async () => {
-			await request(app.getHttpServer())
-				.post("/weather")
-				.send({})
-				.expect(400);
+			await request(app.getHttpServer()).post("/weather").send({}).expect(400);
 		});
 	});
 
@@ -87,9 +82,7 @@ describe("Weather API (e2e)", () => {
 			expect(response.body.meta).toHaveProperty("page");
 			expect(response.body.meta).toHaveProperty("limit");
 			expect(response.body.meta).toHaveProperty("total");
-			expect(response.body.meta).toHaveProperty(
-				"totalPages",
-			);
+			expect(response.body.meta).toHaveProperty("totalPages");
 
 			expect(response.body.meta.page).toBe(1);
 			expect(response.body.meta.limit).toBe(50);

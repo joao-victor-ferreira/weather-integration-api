@@ -11,8 +11,7 @@ export class WeatherService {
 	) {}
 
 	async createWeather(city: string) {
-		const weather =
-			await this.weatherApiService.getCurrentWeather(city);
+		const weather = await this.weatherApiService.getCurrentWeather(city);
 
 		return this.prismaService.weatherRecord.create({
 			data: {

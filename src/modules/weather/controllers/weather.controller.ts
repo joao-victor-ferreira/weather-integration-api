@@ -1,10 +1,5 @@
 import { Body, Controller, Get, Post, Query } from "@nestjs/common";
-import {
-	ApiOperation,
-	ApiQuery,
-	ApiResponse,
-	ApiTags,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateWeatherDto } from "../dto/create-weather.dto.js";
 import { WeatherHistoryQueryDto } from "../dto/weather-history-query.dto.js";
@@ -67,12 +62,7 @@ export class WeatherController {
 		status: 400,
 		description: "Parâmetros de paginação inválidos.",
 	})
-	async getWeatherHistory(
-		@Query() query: WeatherHistoryQueryDto,
-	) {
-		return this.weatherService.getWeatherHistory(
-			query.page,
-			query.limit,
-		);
+	async getWeatherHistory(@Query() query: WeatherHistoryQueryDto) {
+		return this.weatherService.getWeatherHistory(query.page, query.limit);
 	}
 }
