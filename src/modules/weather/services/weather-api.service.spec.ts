@@ -5,7 +5,7 @@ import {
 	UnauthorizedException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { of, throwError } from "rxjs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -13,9 +13,12 @@ import { WeatherApiService } from "./weather-api.service.js";
 
 describe("WeatherApiService", () => {
 	let service: WeatherApiService;
+
 	let httpService: {
 		get: ReturnType<typeof vi.fn>;
+		axiosRef: ReturnType<typeof axios.create>;
 	};
+
 	let configService: {
 		getOrThrow: ReturnType<typeof vi.fn>;
 	};
@@ -23,6 +26,7 @@ describe("WeatherApiService", () => {
 	beforeEach(() => {
 		httpService = {
 			get: vi.fn(),
+			axiosRef: axios.create(),
 		};
 
 		configService = {
@@ -74,6 +78,7 @@ describe("WeatherApiService", () => {
 					q: "Rio de Janeiro",
 					aqi: "no",
 				},
+				timeout: 5000,
 			},
 		);
 
@@ -81,29 +86,41 @@ describe("WeatherApiService", () => {
 	});
 
 	it("deve lançar UnauthorizedException quando a API retornar 401", async () => {
-		const error = new AxiosError("Unauthorized", "401", undefined, undefined, {
-			status: 401,
-			statusText: "Unauthorized",
-			headers: {},
-			config: {} as never,
-			data: {},
-		});
+		const error = new AxiosError(
+			"Unauthorized",
+			"401",
+			undefined,
+			undefined,
+			{
+				status: 401,
+				statusText: "Unauthorized",
+				headers: {},
+				config: {} as never,
+				data: {},
+			},
+		);
 
 		httpService.get.mockReturnValue(throwError(() => error));
 
-		await expect(service.getCurrentWeather("Rio de Janeiro")).rejects.toThrow(
-			UnauthorizedException,
-		);
+		await expect(
+			service.getCurrentWeather("Rio de Janeiro"),
+		).rejects.toThrow(UnauthorizedException);
 	});
 
 	it("deve lançar NotFoundException quando a cidade não for encontrada", async () => {
-		const error = new AxiosError("Not Found", "404", undefined, undefined, {
-			status: 404,
-			statusText: "Not Found",
-			headers: {},
-			config: {} as never,
-			data: {},
-		});
+		const error = new AxiosError(
+			"Not Found",
+			"404",
+			undefined,
+			undefined,
+			{
+				status: 404,
+				statusText: "Not Found",
+				headers: {},
+				config: {} as never,
+				data: {},
+			},
+		);
 
 		httpService.get.mockReturnValue(throwError(() => error));
 
@@ -117,8 +134,8 @@ describe("WeatherApiService", () => {
 
 		httpService.get.mockReturnValue(throwError(() => error));
 
-		await expect(service.getCurrentWeather("Rio de Janeiro")).rejects.toThrow(
-			InternalServerErrorException,
-		);
+		await expect(
+			service.getCurrentWeather("Rio de Janeiro"),
+		).rejects.toThrow(InternalServerErrorException);
 	});
 });

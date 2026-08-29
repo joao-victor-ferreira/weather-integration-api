@@ -6,7 +6,8 @@ import {
 	UnauthorizedException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
+import axiosRetry from "axios-retry";
 import { firstValueFrom } from "rxjs";
 
 import { WeatherApiResponse } from "../interfaces/weather-api-response.interface.js";
@@ -21,8 +22,20 @@ export class WeatherApiService {
 		private readonly configService: ConfigService,
 	) {
 		this.apiKey = this.configService.getOrThrow<string>("weatherApi.apiKey");
-
 		this.baseUrl = this.configService.getOrThrow<string>("weatherApi.baseUrl");
+
+		axiosRetry(this.httpService.axiosRef, {
+			retries: 3,
+			retryDelay: axiosRetry.exponentialDelay,
+			retryCondition: (error) => {
+				return (
+					axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+					error.code === "ECONNABORTED" ||
+					error.code === "ETIMEDOUT" ||
+					(error.response?.status !== undefined && error.response.status >= 500)
+				);
+			},
+		});
 	}
 
 	async getCurrentWeather(city: string): Promise<WeatherApiResponse> {
@@ -36,6 +49,7 @@ export class WeatherApiService {
 							q: city,
 							aqi: "no",
 						},
+						timeout: 5000,
 					},
 				),
 			);
