@@ -241,7 +241,7 @@ npm run start:prod  # executar produção
 - [x] Endpoint `GET /weather`
 - [x] Persistência dos dados climáticos
 - [x] Endpoint `POST /weather`
-- [ ] Endpoint `GET /weather/history`
+- [x] Endpoint `GET /weather/history`
 
 ### Documentação e Qualidade
 

@@ -15,8 +15,7 @@ export class WeatherService {
 	}
 
 	async createWeather(city: string) {
-		const weather =
-			await this.weatherApiService.getCurrentWeather(city);
+		const weather = await this.weatherApiService.getCurrentWeather(city);
 
 		return this.prismaService.weatherRecord.create({
 			data: {
@@ -38,6 +37,14 @@ export class WeatherService {
 				windSpeed: weather.current.wind_kph,
 
 				recordedAt: new Date(weather.current.last_updated),
+			},
+		});
+	}
+
+	async getWeatherHistory() {
+		return this.prismaService.weatherRecord.findMany({
+			orderBy: {
+				recordedAt: "desc",
 			},
 		});
 	}
