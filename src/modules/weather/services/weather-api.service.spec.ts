@@ -86,41 +86,29 @@ describe("WeatherApiService", () => {
 	});
 
 	it("deve lançar UnauthorizedException quando a API retornar 401", async () => {
-		const error = new AxiosError(
-			"Unauthorized",
-			"401",
-			undefined,
-			undefined,
-			{
-				status: 401,
-				statusText: "Unauthorized",
-				headers: {},
-				config: {} as never,
-				data: {},
-			},
-		);
+		const error = new AxiosError("Unauthorized", "401", undefined, undefined, {
+			status: 401,
+			statusText: "Unauthorized",
+			headers: {},
+			config: {} as never,
+			data: {},
+		});
 
 		httpService.get.mockReturnValue(throwError(() => error));
 
-		await expect(
-			service.getCurrentWeather("Rio de Janeiro"),
-		).rejects.toThrow(UnauthorizedException);
+		await expect(service.getCurrentWeather("Rio de Janeiro")).rejects.toThrow(
+			UnauthorizedException,
+		);
 	});
 
 	it("deve lançar NotFoundException quando a cidade não for encontrada", async () => {
-		const error = new AxiosError(
-			"Not Found",
-			"404",
-			undefined,
-			undefined,
-			{
-				status: 404,
-				statusText: "Not Found",
-				headers: {},
-				config: {} as never,
-				data: {},
-			},
-		);
+		const error = new AxiosError("Not Found", "404", undefined, undefined, {
+			status: 404,
+			statusText: "Not Found",
+			headers: {},
+			config: {} as never,
+			data: {},
+		});
 
 		httpService.get.mockReturnValue(throwError(() => error));
 
@@ -134,8 +122,8 @@ describe("WeatherApiService", () => {
 
 		httpService.get.mockReturnValue(throwError(() => error));
 
-		await expect(
-			service.getCurrentWeather("Rio de Janeiro"),
-		).rejects.toThrow(InternalServerErrorException);
+		await expect(service.getCurrentWeather("Rio de Janeiro")).rejects.toThrow(
+			InternalServerErrorException,
+		);
 	});
 });
